@@ -207,7 +207,7 @@ export default class NpcClickComponent extends ComponentExtends {
     /** 初始化奖励时间段 */
     initRewardTimesSpan(id: number) {
         if (this.npcId == 3 || this.npcId == 5 || this.npcId == 7 || this.npcId == 9) {
-            this.rewardTimesSpan = main.module.gamedata.npcConfig.get(`npc_${id}`).timeSpan * 1000;
+            this.rewardTimesSpan = 10 * this.npcId * 1000;
         }
     }
 
@@ -224,13 +224,6 @@ export default class NpcClickComponent extends ComponentExtends {
         }
         this.canClick = false;
         cc.log(`点击npc_${this.npcId}爱心`);
-        if (main.module.gamedata.npcData[`npc_${this.npcId}`]) {
-            let preRewardTime = main.module.gamedata.npcData[`npc_${this.npcId}`]["rewardTime"];
-            let timeCount = main.module.calcUiShow.getSeverCurrentTime() - preRewardTime;
-            if (preRewardTime && timeCount < this.rewardTimesSpan) {
-                return;
-            }
-        }
         let popViewParams: PopViewParams = {
             modal: true,
             opacity: 120,
@@ -246,8 +239,7 @@ export default class NpcClickComponent extends ComponentExtends {
                 node.RunAction(ezaction.scaleTo(0.2, { scale: 0.1 })).onStoped(next);
             }
         }
-        cc.log(this.npcId,"奖励时间："+main.module.gamedata.npcConfig.get(`npc_${this.npcId}`).rewardData[0]["value"])
-        let reward = main.module.calcUiShow.getTimeStageReward(main.module.gamedata.npcConfig.get(`npc_${this.npcId}`).rewardData[0]["value"]);
+        let reward = main.module.calcUiShow.getTimeStageReward(6000);
         if(reward.num == 0 && reward.numE == 0){
             reward = {num:1,numE:3};
         }
@@ -255,9 +247,6 @@ export default class NpcClickComponent extends ComponentExtends {
         qipaoNode.active = false;
         this.node.getChildByName("click_effect").active = false;
         this.node.getChildByName("click_skeleton").active = false;
-        main.module.vm.npcNum+=1;
-        main.module.gameProtocol.writeCacheData("npcNum", main.module.vm.npcNum as Object, (data) => {
-        })
         if(main.module.vm.mainProgress.progress_5 == 0){
             Message.dispatchEvent(NPC_EVENT.REMOVE_CAN_CLICK,this.npcId);
             let mainNodes = ViewUtils.nodeTreeInfoLite(this.node);
@@ -266,65 +255,16 @@ export default class NpcClickComponent extends ComponentExtends {
         if(main.module.vm.mainProgress.progress_7 == 1){
             Message.dispatchEvent(NPC_EVENT.NPC_FAME,this.npcId);
             main.module.gamedata.fameNpcNum+=1;
-            main.module.gameProtocol.writeCacheData("fameNpcNum", main.module.gamedata.fameNpcNum as Object, (data) => {
-                    
-            })
+            cc.sys.localStorage.setItem("fameNpcNum", main.module.gamedata.fameNpcNum);
         }
         switch (this.npcId) {
             case 7:
-                let type = this.getRandomNum(2, 3);
-                gui.popup.add(`popup/adv_choose`, { reward:reward,
-                    type: type, callback: (success: boolean, _type: number) => {
-                        service.prompt.netInstableOpen();
-                        if (success) {
-                            service.analytics.logEvent("ad_complete_advocate", "", "")
-                            if (type == AdvRewardType.NPC_7_1) {
-                                cc.log(`观看完广告，金币翻5倍`)
-                                service.analytics.logEvent("ad_complete_profits", "", "")
-                                main.module.gameProtocol.requestNpcReward(this.npcId, 0, success , (data) => {
-                                    service.prompt.netInstableClose();
-                                    main.module.gamedata.npcData = data["npcData"];
-                                    reward = main.module.calcTool.calcMutiNum(
-                                        { num: main.module.gamedata.npcConfig.get(`npc_${this.npcId}`).rewardData[0]["watch"], numE: 0 },
-                                        reward);
-                                    cc.log("翻倍："+main.module.gamedata.npcConfig.get(`npc_${this.npcId}`).rewardData[0]["watch"]);
-                                    let result = main.module.calcTool.formatNum(reward);
-                                    cc.log(`金币翻五倍结果:${result.base}${result.gear}`)
-                                    this.onTouchEndCallback(reward);
-                                })
-                            } else {
-                                cc.log(`观看完广告，获得5颗钻石`)
-                                main.module.gameProtocol.requestNpcReward(this.npcId, 1, success, (data) => {
-                                    service.prompt.netInstableClose();
-                                    main.module.gamedata.npcData = data["npcData"];
-                                    main.module.gameMainControl.playAdDiamondEffect(()=>{
-                                        main.module.vm.diamond = data["userAccount"]["credit"];
-                                    });
-                                    this.onTouchEndCallback();
-                                })
-                            }
-                           this.taskCount();
-                        } else {
-                            if (type == AdvRewardType.NPC_7_1) {
-                                cc.log(`未观看完广告，金币不翻倍`);
-                                main.module.gameProtocol.requestNpcReward(this.npcId, 0, success, (data) => {
-                                    service.prompt.netInstableClose();
-                                    let result = main.module.calcTool.formatNum(reward);
-                                    cc.log(`金币不翻倍结果:${result.base}${result.gear}`)
-                                    main.module.gamedata.npcData = data["npcData"];
-                                    this.onTouchEndCallback(reward);
-                                })
-                            } else {
-                                cc.log(`未观看完广告，未获得钻石`);
-                                main.module.gameProtocol.requestNpcReward(this.npcId, 1,success, (data) => {
-                                    service.prompt.netInstableClose();
-                                    main.module.gamedata.npcData = data["npcData"];
-                                    this.onTouchEndCallback();
-                                })
-                            }
-                        }
-                    }
-                }, popViewParams);
+                reward = main.module.calcTool.calcMutiNum(
+                    { num: 5, numE: 0 },
+                    reward);
+                let result = main.module.calcTool.formatNum(reward);
+                cc.log(`金币翻五倍结果:${result.base}${result.gear}`)
+                this.onTouchEndCallback(reward);
                 break;
             case 3:
             case 5:
@@ -342,48 +282,19 @@ export default class NpcClickComponent extends ComponentExtends {
                     }
                 })
                 this.node.getComponent(Charactor).down();
-                service.prompt.netInstableOpen();
-                main.module.gameProtocol.requestNpcReward(this.npcId, 0,false, (data) => {
-                    service.prompt.netInstableClose();
-                    main.module.gamedata.npcData = data["npcData"];
-                    if(reward.num == 0 && reward.numE == 0){
-                        reward = {num:1,numE:3}
-                    }
-                    this.onTouchEndCallback(reward);
-                    nextCall();
-                })
+                if(reward.num == 0 && reward.numE == 0){
+                    reward = {num:1,numE:3}
+                }
+                this.onTouchEndCallback(reward);
+                nextCall();
                 let _taskList = main.module.calcUiShow.changeTaskListByTypeCount(TaskType.LUCKY_reward, 1)
                 main.module.gameProtocol.sendTaskList(_taskList, (obj) => {
                     main.module.vm.taskList = _taskList;
                 })
                 break;
             case 9:
-                gui.popup.add(`popup/adv_choose`, {
-                    type: AdvRewardType.NPC_9, callback: (success: boolean, _type: number) => {
-                        if (success) {
-                            service.analytics.logEvent("ad_complete_takeaway", "", "")
-                            cc.log(`观看完广告，可以获得道具`);
-                            service.prompt.netInstableOpen();
-                            main.module.gameProtocol.requestNpcReward(this.npcId, 0, success,  (data) => {
-                                service.prompt.netInstableClose();
-                                main.module.gamedata.npcData = data["npcData"];
-                                cc.log(`获得道具成功`);
-                                this.initTime = data["npcData"]["npc_9"]["rewardTime"];
-                                this.onTouchEndCallback();
-                                main.module.gameMainControl.playPackageffect();
-                            })
-                            this.taskCount();
-                        } else {
-                            cc.log(`未观看完广告，不可以获得道具`);
-                            service.prompt.netInstableOpen();
-                            main.module.gameProtocol.requestNpcReward(this.npcId, 0, success, (data) => {
-                                service.prompt.netInstableClose();
-                                main.module.gamedata.npcData = data["npcData"];
-                                this.onTouchEndCallback();
-                            })
-                        }
-                    }
-                }, popViewParams);
+                this.onTouchEndCallback();
+                main.module.gameMainControl.playPackageffect();
                 break;
             default:
                 break;
@@ -399,7 +310,7 @@ export default class NpcClickComponent extends ComponentExtends {
 
     canClick:boolean = true;
     onTouchEndCallback(reward?: formatParams) {
-        this.initTime = main.module.gamedata.npcData[`npc_${this.npcId}`]["rewardTime"];
+        this.initTime = main.module.calcUiShow.getSeverCurrentTime();
         this.canClick = true;
         if (reward) {
             main.module.gameMainControl.playCreditEffect(reward, () => {

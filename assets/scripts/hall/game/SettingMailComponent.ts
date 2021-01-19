@@ -38,7 +38,6 @@ export default class SettingMailComponent extends ComponentExtends {
             this.mainNodes.get("personal_info").active = toggle.node.name == "toggle1";
             this.mainNodes.get("mails").active = toggle.node.name != "toggle1";
             if (toggle.node.name == "toggle2") {
-                this.refreshMailList();
             } else {
                 this.refreshPersonalInfo();
             }
@@ -118,6 +117,7 @@ export default class SettingMailComponent extends ComponentExtends {
         this.mainNodes.get("head").active = false;
         this.mainNodes.get("nickname").getComponent(cc.EditBox).string = "";
         let gameData = main.module.gamedata;
+        gameData.headId = 5;
         if (gameData.headId) {
             let spf = cc.loader.getRes(`main/head/head_${gameData.headId}`, cc.SpriteFrame);
             this.headId = gameData.headId;
@@ -166,6 +166,7 @@ export default class SettingMailComponent extends ComponentExtends {
     /** 刷新邮件列表 */
     mailItemPoool: Array<cc.Node> = [];
     refreshMailList() {
+        return;
         this.mailItemNode.active = false;
         this.removeItems();
         main.module.gameProtocol.requestMessageList((data) => {
@@ -226,7 +227,8 @@ export default class SettingMailComponent extends ComponentExtends {
                 break;
             }
             case "logout": {
-                main.module.exitHall();
+                // main.module.exitHall();
+                // cc.sy
                 break;
             }
 

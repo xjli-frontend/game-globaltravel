@@ -25,6 +25,7 @@ export default class LandmarkComonent extends ComponentExtends {
 
     onTouchEnd(touch,event) {
          // 返回世界坐标
+         return;
          let touchLoc = touch.getLocation();
          let collider = this.node.getComponent(cc.PolygonCollider);
          if (cc.Intersection.pointInPolygon(touchLoc, collider.world.points)) {

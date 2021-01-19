@@ -47,93 +47,94 @@ export default class LandmarkProgress extends ComponentExtends {
         if(reward.num == 0){
             reward = {num:1,numE:3};
         }
-        switch(event.target.name){
-            case "btn_poster":{
-                if(this.node.getChildByName("btn_poster").getComponent(ButtonEffect) && !this.node.getChildByName("btn_poster").getComponent(ButtonEffect).canTouch){
-                    return;
-                }
-                this.canGetDiamond = false;
-                this.nextCanClickTime = this.nextCanClickTime + 10 * 1000;
-                let count = main.module.vm.advCount + 1;
-                if(count-1 == 5){
-                    main.module.gameMainControl.playAdDiamondEffect(()=>{
-                        main.module.gameProtocol.requestDayTaskReward(31,(obj)=>{
-                            main.module.vm.advCount = 0;
-                            main.module.gameProtocol.sendAdvCount(0);
-                            main.module.vm.diamond = obj["userAccount"]["credit"];
-                        });
-                    });
-                    return;
-                }
-                if (cc.sys.isBrowser) {
-                    cc.log(`浏览器直接发放地标金币奖励`);
-                    main.module.gameMainControl.playCreditEffect(reward, () => {
-                        main.module.calcUiShow.refreshCredit(reward, () => {
-                        }, true)
-                    });
-                    let _taskListAd = main.module.calcUiShow.changeTaskListByTypeCount(TaskType.WATCH_AD, 1)
-                    main.module.gameProtocol.sendTaskList(_taskListAd, (obj) => {
-                        main.module.vm.taskList = _taskListAd;
-                    })
-                    if(count <= 5){
-                        main.module.gameProtocol.sendAdvCount(count,()=>{
-                            main.module.vm.advCount = count;
-                            this.canGetDiamond = true;
-                        });
-                    }else{
-                        main.module.gameProtocol.sendAdvCount(5,()=>{
-                            main.module.vm.advCount = 5;
-                            this.canGetDiamond = true;
-                        });
-                    }
-                    return;
-                }
-                Message.dispatchEvent(AdvMessage.PLAY, {
-                    callback: (success: boolean, type: number) => {
-                        if (type == AdvRewardType.LANDMARK) {
-                            if (success) {
-                                cc.log(`点击地标观看广告成功`);
-                                this.canGetDiamond = true;
-                                main.module.gameMainControl.playCreditEffect(reward, () => {
-                                    main.module.calcUiShow.refreshCredit(reward, () => {
-                                    }, true)
-                                });
-                            } else {
-                                this.canGetDiamond = true;
-                                let currentDate = main.module.calcUiShow.getSeverCurrentTime();
-                                this.nextCanClickTime = currentDate;
-                                cc.log(`点击地标观看广告失败`)
-                            }
-                        }
-                    }, type: AdvRewardType.LANDMARK
-                });
-                break;
-            }
-            case "bg":{
-                cc.log(`LandmarkProgress:选择不观看视频bg`)
-                break;
-            }
-            case "btn_diamond":{
-                if(this.node.getChildByName("btn_diamond").getComponent(ButtonEffect) && !this.node.getChildByName("btn_diamond").getComponent(ButtonEffect).canTouch){
-                    return;
-                }
-                cc.log(`LandmarkProgress:领取钻石`)
-                this.nextCanClickTime = this.nextCanClickTime + 10 * 1000;
-                main.module.gameMainControl.playAdDiamondEffect(()=>{
-                    main.module.gameProtocol.requestDayTaskReward(31,(obj)=>{
-                        main.module.vm.advCount = 0;
-                        main.module.gameProtocol.sendAdvCount(0);
-                        main.module.vm.diamond = obj["userAccount"]["credit"];
-                    });
-                });
-                break;
-            }
-            default:{
-                cc.log(`LandmarkProgress:选择不观看视频`)
-                // this.node.destroy();
-                gui.delete(this.node);
-            }
-        }
+        return;
+        // switch(event.target.name){
+        //     case "btn_poster":{
+        //         if(this.node.getChildByName("btn_poster").getComponent(ButtonEffect) && !this.node.getChildByName("btn_poster").getComponent(ButtonEffect).canTouch){
+        //             return;
+        //         }
+        //         this.canGetDiamond = false;
+        //         this.nextCanClickTime = this.nextCanClickTime + 10 * 1000;
+        //         let count = main.module.vm.advCount + 1;
+        //         if(count-1 == 5){
+        //             main.module.gameMainControl.playAdDiamondEffect(()=>{
+        //                 main.module.gameProtocol.requestDayTaskReward(31,(obj)=>{
+        //                     main.module.vm.advCount = 0;
+        //                     main.module.gameProtocol.sendAdvCount(0);
+        //                     main.module.vm.diamond = obj["userAccount"]["credit"];
+        //                 });
+        //             });
+        //             return;
+        //         }
+        //         if (cc.sys.isBrowser) {
+        //             cc.log(`浏览器直接发放地标金币奖励`);
+        //             main.module.gameMainControl.playCreditEffect(reward, () => {
+        //                 main.module.calcUiShow.refreshCredit(reward, () => {
+        //                 }, true)
+        //             });
+        //             let _taskListAd = main.module.calcUiShow.changeTaskListByTypeCount(TaskType.WATCH_AD, 1)
+        //             main.module.gameProtocol.sendTaskList(_taskListAd, (obj) => {
+        //                 main.module.vm.taskList = _taskListAd;
+        //             })
+        //             if(count <= 5){
+        //                 main.module.gameProtocol.sendAdvCount(count,()=>{
+        //                     main.module.vm.advCount = count;
+        //                     this.canGetDiamond = true;
+        //                 });
+        //             }else{
+        //                 main.module.gameProtocol.sendAdvCount(5,()=>{
+        //                     main.module.vm.advCount = 5;
+        //                     this.canGetDiamond = true;
+        //                 });
+        //             }
+        //             return;
+        //         }
+        //         Message.dispatchEvent(AdvMessage.PLAY, {
+        //             callback: (success: boolean, type: number) => {
+        //                 if (type == AdvRewardType.LANDMARK) {
+        //                     if (success) {
+        //                         cc.log(`点击地标观看广告成功`);
+        //                         this.canGetDiamond = true;
+        //                         main.module.gameMainControl.playCreditEffect(reward, () => {
+        //                             main.module.calcUiShow.refreshCredit(reward, () => {
+        //                             }, true)
+        //                         });
+        //                     } else {
+        //                         this.canGetDiamond = true;
+        //                         let currentDate = main.module.calcUiShow.getSeverCurrentTime();
+        //                         this.nextCanClickTime = currentDate;
+        //                         cc.log(`点击地标观看广告失败`)
+        //                     }
+        //                 }
+        //             }, type: AdvRewardType.LANDMARK
+        //         });
+        //         break;
+        //     }
+        //     case "bg":{
+        //         cc.log(`LandmarkProgress:选择不观看视频bg`)
+        //         break;
+        //     }
+        //     case "btn_diamond":{
+        //         if(this.node.getChildByName("btn_diamond").getComponent(ButtonEffect) && !this.node.getChildByName("btn_diamond").getComponent(ButtonEffect).canTouch){
+        //             return;
+        //         }
+        //         cc.log(`LandmarkProgress:领取钻石`)
+        //         this.nextCanClickTime = this.nextCanClickTime + 10 * 1000;
+        //         main.module.gameMainControl.playAdDiamondEffect(()=>{
+        //             main.module.gameProtocol.requestDayTaskReward(31,(obj)=>{
+        //                 main.module.vm.advCount = 0;
+        //                 main.module.gameProtocol.sendAdvCount(0);
+        //                 main.module.vm.diamond = obj["userAccount"]["credit"];
+        //             });
+        //         });
+        //         break;
+        //     }
+        //     default:{
+        //         cc.log(`LandmarkProgress:选择不观看视频`)
+        //         // this.node.destroy();
+        //         gui.delete(this.node);
+        //     }
+        // }
     }
 
     update(){

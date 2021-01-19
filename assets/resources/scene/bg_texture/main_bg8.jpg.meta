@@ -1,6 +1,6 @@
 {
   "ver": "2.3.4",
-  "uuid": "f12f38e7-bac7-4775-a10b-4e0bbe6e77bd",
+  "uuid": "12dc33db-c7e8-4de7-ad01-0dbeb39ce5a8",
   "type": "sprite",
   "wrapMode": "clamp",
   "filterMode": "bilinear",
@@ -9,21 +9,12 @@
   "packable": true,
   "width": 1917,
   "height": 1923,
-  "platformSettings": {
-    "android": {
-      "formats": [
-        {
-          "name": "etc1_rgb",
-          "quality": "fast"
-        }
-      ]
-    }
-  },
+  "platformSettings": {},
   "subMetas": {
-    "main_bg1": {
+    "main_bg8": {
       "ver": "1.0.4",
-      "uuid": "2ecc1a08-25c8-4568-a6cc-d342d5b652c9",
-      "rawTextureUuid": "f12f38e7-bac7-4775-a10b-4e0bbe6e77bd",
+      "uuid": "a3af4afe-e512-49c0-8680-0ee95ecf01dd",
+      "rawTextureUuid": "12dc33db-c7e8-4de7-ad01-0dbeb39ce5a8",
       "trimType": "auto",
       "trimThreshold": 1,
       "rotated": false,

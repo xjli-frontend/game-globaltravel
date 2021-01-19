@@ -674,9 +674,9 @@ export default class StoreComponent extends ComponentExtends {//每一个商店�
     preReturnRewardTime: number = 0;
     isFullAnim: boolean = false;
     collect() {
-        if (service.server.state == ServerState.DISCONNECTED) {
-            return;
-        }
+        // if (service.server.state == ServerState.DISCONNECTED) {
+        //     return;
+        // }
         let currentReturnRewardTime = main.module.calcUiShow.getSeverCurrentTime();//当前时间
         let timeCount = currentReturnRewardTime - this.preReturnRewardTime;
         let returnCount = Math.floor(timeCount / this.currentTimeSpanTotal);//返奖次数
@@ -732,9 +732,9 @@ export default class StoreComponent extends ComponentExtends {//每一个商店�
     }
 
     collectQuick() {
-        if (service.server.state == ServerState.DISCONNECTED) {
-            return;
-        }
+        // if (service.server.state == ServerState.DISCONNECTED) {
+        //     return;
+        // }
         let currentReturnRewardTime = main.module.calcUiShow.getSeverCurrentTime();//当前时间
         let timeCount = currentReturnRewardTime - this.preReturnRewardTime;
         if (this.currentStoreLv > 0 && this.returnReward) {

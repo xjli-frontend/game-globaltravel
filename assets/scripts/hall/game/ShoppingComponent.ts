@@ -46,28 +46,24 @@ export default class ShoppingComponent extends ComponentExtends {
         })
         let index = 0;
         service.prompt.netInstableOpen();
-        main.module.gameProtocol.requestGoodsList((data)=>{
             service.prompt.netInstableClose();
-            main.module.vm.goodsList = data["goodsList"];;
-            for(let key in main.module.vm.goodsList){
-                let oneGoods = main.module.vm.goodsList[key];
-                if(oneGoods.priceType == 2){
+            for(let i=0; i<8;i++){
                     let param:goods = {
-                        id : oneGoods.id,
-                        goods_type : oneGoods.goodsType,
-                        price : oneGoods.price,
-                        priceType : oneGoods.priceType,
-                        value : oneGoods.value,
+                        id : i+1,
+                        goods_type : 1,
+                        price : i*100,
+                        priceType : 1,
+                        value : 300,
                     }
                     let com:ShoppingListItem = null;
                     if(index == 0){
                         this.item_node.active = true;
-                        this.item_node.name = `${oneGoods.id}`;
+                        this.item_node.name = `${param.id}`;
                         com = this.item_node.getComponent(ShoppingListItem)
                         com.setData(param)
                     }else{
                         let _itemNode = cc.instantiate(this.item_node);
-                        _itemNode.name = `${oneGoods.id}`;
+                        _itemNode.name = `${param.id}`;
                         _itemNode.parent = itemParent;
                         com = _itemNode.getComponent(ShoppingListItem)
                         com.setData(param)
@@ -75,10 +71,8 @@ export default class ShoppingComponent extends ComponentExtends {
                     com.clickCallback = this.itemClickHandler.bind(this);
 
                     index ++;
-                }
             }
             this.node.active = true;
-        })
         this.refreshMutiLab();
     }
 

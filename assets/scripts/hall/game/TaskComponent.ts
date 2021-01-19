@@ -155,8 +155,8 @@ export default class TaskComponent extends ComponentExtends {
             if(isFinish){
                 let callback = ()=>{
                     main.module.gameProtocol.requestMainTaskReward((obj)=>{
-                        main.module.vm.diamond = obj["userAccount"]["credit"];
-                        main.module.vm.levelReward = obj["accountInfo"]["levelReward"];
+                        main.module.vm.diamond+=20;
+                        main.module.vm.levelReward+=1;
                         this.loadTaskMainList();
                     })
                 }
@@ -330,7 +330,6 @@ export default class TaskComponent extends ComponentExtends {
             if(rewardType == 1){
                 main.module.gameMainControl.playDiamondffect(()=>{
                     main.module.gameProtocol.requestDayTaskReward(data["id"],(obj)=>{
-                        main.module.vm.diamond = obj["userAccount"]["credit"];
                         nextCall && nextCall();
                     });
                     main.module.gameProtocol.sendTaskList(_taskList, (obj) => {
@@ -364,6 +363,7 @@ export default class TaskComponent extends ComponentExtends {
 
     isUpdate:boolean = false;
     update(){
+        return;
         let cutdownTimes = main.module.vm.taskList["endTime"] - main.module.calcUiShow.getSeverCurrentTime();
         let str = main.module.calcUiShow.formatTime(cutdownTimes);
         // cc.log(`cutdownTimes=>${cutdownTimes}`,`formatTime=>${str}`,`severCurrentTime=>${main.module.calcUiShow.getSeverCurrentTime()}`);

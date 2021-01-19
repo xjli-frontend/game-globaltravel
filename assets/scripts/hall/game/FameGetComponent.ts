@@ -75,13 +75,9 @@ export default class FameGetComponent extends ComponentExtends {
         let canGetFame = main.module.calcUiShow.calcCurrentCanGetFame()
         main.module.calcUiShow.refreshFame(canGetFame);
         main.module.gamedata.getFameTime = main.module.calcUiShow.getSeverCurrentTime() + 3 * 60 * 60 * 1000;
-        main.module.gameProtocol.writeCacheData("getFameTime", main.module.gamedata.getFameTime as Object, (data) => {
-        
-        })
+       
         main.module.gamedata.fameNpcNum = 0;
-        main.module.gameProtocol.writeCacheData("fameNpcNum", main.module.gamedata.fameNpcNum as Object, (data) => {
-                
-        })
+        cc.sys.localStorage.setItem("fameNpcNum", 0);
         this.setInfo();
         let popViewParams: PopViewParams = {
             touchClose: true,

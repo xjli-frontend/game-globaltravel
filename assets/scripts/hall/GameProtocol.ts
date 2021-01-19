@@ -2,6 +2,7 @@ import main from "../Main";
 import { Server } from "../service/server/Server";
 import { service } from "../service/Service";
 import { formatParams } from "./CalcTool";
+import ViewMenu from "./game/ViewMenu";
 
 
 export enum EventProtocol {
@@ -255,7 +256,23 @@ export class GameProtocol {
         let params = {
             title:"goodsList"
         }
-        this.requestCashRead(params, callback)
+        let cachData = cc.sys.localStorage.getItem("goodsList");
+        if(!cachData){
+            let _cachData = {};
+            for (let i = 0; i < 11; i++) {
+                let oneFame = {
+                    id:i+1,
+                    level:0,
+                }
+                _cachData[`fame_${i+1}`] = oneFame;
+            }
+            cachData = {goodsList:_cachData};
+            cc.sys.localStorage.setItem("goodsList",JSON.stringify(cachData));
+        }else{
+            cachData = JSON.parse(cachData);
+        }
+        cc.log(params.title, cachData);
+        if (callback) callback(cachData);
     }
 
     /**
@@ -294,10 +311,12 @@ export class GameProtocol {
         if(!cachData){
             let _cachData = {};
             for (let i = 0; i < 11; i++) {
+                let config = main.module.themeConfig.getTaskConfigByTag(`task_${i+1}`);
                 let oneTask = {
                     id:i+1,
                     status:0,
-                    taskValue:0
+                    taskValue:0,
+                    taskTag:config.taskTag
                 }
                 _cachData[`task_${i+1}`] = oneTask;
             }
@@ -324,10 +343,11 @@ export class GameProtocol {
             let _cachData = {};
             for (let i = 0; i < 11; i++) {
                 let oneProp = {
+                    pid:i+1,
                     totalCount:0,
                     usedCount:0,
                 }
-                _cachData[`pid_${i+1}`] = oneProp;
+                _cachData[`prop_${i+1}`] = oneProp;
             }
             cachData = {propStorageList:_cachData};
             cc.sys.localStorage.setItem("propStorageList",JSON.stringify(cachData));
@@ -336,6 +356,55 @@ export class GameProtocol {
         }
         cc.log(params.title, cachData);
         if (callback) callback(cachData);
+    }
+
+        /**
+     * 每日任务领取
+     * @param callback 
+     * @编号 (2103)
+     */
+    public requestDayTaskReward(taskId: number, callback: Function) {
+        let params = {
+            title: "taskReward",
+            taskId: taskId
+        }
+
+        let config = main.module.themeConfig.getTaskConfigByTag(`task_${taskId}`);
+        if(config.rewardType == 2){
+            let propStorageList = main.module.vm.propStorageList;
+            let id = this.getRandomNum(1,11)
+            let prop = propStorageList[`prop_${id}`];
+            prop["totalCount"]+=1;
+            let cachData = {propStorageList:main.module.vm.propStorageList};
+            cc.sys.localStorage.setItem("propStorageList",JSON.stringify(cachData));
+            callback && callback();
+        }else{
+            main.module.vm.diamond+=config.rewardValue;
+            let d = cc.sys.localStorage.getItem("entryData");
+            let parseData = JSON.parse(d);
+            parseData["diamond"] = main.module.vm.diamond;
+            cc.sys.localStorage.setItem("entryData",JSON.stringify(parseData));
+            callback && callback();
+
+        }
+    }
+    
+    /**
+     * 道具使用
+     * @param callback 
+     * @编号 (2103)
+     */
+    public requestUseProp(pid: number, callback: Function) {
+        let params = {
+            title: "useProp",
+            pid: pid
+        }
+        let propStorageList = main.module.vm.propStorageList;
+        let prop = propStorageList[`prop_${pid}`];
+        prop["totalCount"]-=1;
+        let cachData = {propStorageList:main.module.vm.propStorageList};
+        cc.sys.localStorage.setItem("propStorageList",JSON.stringify(cachData));
+        callback && callback();
     }
 
     /**
@@ -370,20 +439,6 @@ export class GameProtocol {
     public requestLikeInfo(callback: Function) {
         let params = {
             title:"likeInfo"
-        }
-        this.requestCashRead(params, callback)
-    }
-
-    /**
-     * 邮件列表
-     * @param pageSize 每页数量
-     * @param pageIndex 页码
-     * @param callback 
-     * @编号 (2101)
-     */
-    public requestMessageList(callback: Function, pageSize?: number, pageIndex?: number) {
-        let params = {
-            title:"mailList"
         }
         this.requestCashRead(params, callback)
     }
@@ -500,7 +555,9 @@ export class GameProtocol {
      * @param callback 
      */
     public sendStoreList(data: any, callback: Function) {
-        this.requestCashWrite("storeList", data, callback)
+        let cachData = {storeList:data};
+        cc.sys.localStorage.setItem("storeList",JSON.stringify(cachData));
+        callback && callback();
     }
 
     /**
@@ -508,7 +565,9 @@ export class GameProtocol {
      * @param callback 
      */
     public sendClerkList(data: any, callback: Function) {
-        this.requestCashWrite("clerkList", data, callback)
+        let cachData = {clerkList:data};
+        cc.sys.localStorage.setItem("clerkList",JSON.stringify(cachData));
+        callback && callback();
     }
 
     /**
@@ -516,7 +575,9 @@ export class GameProtocol {
      * @param callback 
      */
     public sendFameList(data: any, callback: Function) {
-        this.requestCashWrite("fameList", data, callback)
+        let cachData = {fameList:data};
+        cc.sys.localStorage.setItem("fameList",JSON.stringify(cachData));
+        callback && callback();
     }
 
     /**
@@ -524,43 +585,13 @@ export class GameProtocol {
      * @param callback 
      */
     public sendTaskList(data: any, callback: Function) {
+        let cachData = {taskList:data};
         if (!main.module.calcUiShow.checkTaskListChange(main.module.vm.taskList, data)) {
             callback && callback(data);
             return;
         }
-        this.requestCashWrite(`taskList`, data, callback)
-    }
-
-    /**
-     * 发功收集速度验证
-     * @param callback 
-     */
-    public sendRewardDetail(data: any, callback: Function) {
-        this.requestCashWrite("rewardDetail", data, callback)
-    }
-
-
-    /**
-     * 道具使用
-     * @param callback 
-     * @编号 (2103)
-     */
-    public requestUseProp(pid: number, callback: Function) {
-        let params = {
-            title: "useProp",
-            pid: pid
-        }
-        let complete = (data) => {
-            cc.log(params.title, data);
-            if (callback) callback(data);
-        };
-
-        this._server.request(`connector.${CASH_TAG}.handler`,
-            params,
-            complete, (code) => {
-                if (callback) callback(null);
-            }
-        );
+        cc.sys.localStorage.setItem("taskList",JSON.stringify(cachData));
+        callback && callback(data);
     }
 
     /**
@@ -577,34 +608,29 @@ export class GameProtocol {
             if (callback) callback(data);
         };
 
+        let cachData = cc.sys.localStorage.getItem("entryData");
+        cachData = JSON.parse(cachData);
         if (accountInfo.credit) {
-            params["credit"] = accountInfo.credit.num;
-            params["creditE"] = accountInfo.credit.numE;
+            cachData["credit"] = accountInfo.credit.num;
+            cachData["creditE"] = accountInfo.credit.numE;
         }
         if (accountInfo.win) {
-            params["win"] = accountInfo.win.num;
-            params["winE"] = accountInfo.win.numE;
+            cachData["win"] = accountInfo.win.num;
+            cachData["winE"] = accountInfo.win.numE;
         }
         if (accountInfo.winTotal) {
-            params["winTotal"] = accountInfo.winTotal.num;
-            params["winTotalE"] = accountInfo.winTotal.numE;
+            cachData["winTotal"] = accountInfo.winTotal.num;
+            cachData["winTotalE"] = accountInfo.winTotal.numE;
         }
         if (accountInfo.fame) {
-            params["fame"] = accountInfo.fame.num;
-            params["fameE"] = accountInfo.fame.numE;
+            cachData["fame"] = accountInfo.fame.num;
+            cachData["fameE"] = accountInfo.fame.numE;
         }
         if (accountInfo.level) {
-            params["level"] = accountInfo.level;
+            cachData["level"] = accountInfo.level;
         }
-        if (accountInfo.cityId) {
-            params["cityId"] = accountInfo.cityId;
-        }
-        this._server.request(`connector.${CASH_TAG}.handler`,
-            params,
-            complete, (code) => {
-                if (callback) callback(null);
-            }
-        );
+        cc.sys.localStorage.setItem("entryData", JSON.stringify(cachData));
+        complete(cachData);
     }
 
 
@@ -700,31 +726,10 @@ export class GameProtocol {
         );
     }
 
-    /**
-     * 每日任务领取
-     * @param callback 
-     * @编号 (2103)
-     */
-    public requestDayTaskReward(taskId: number, callback: Function) {
-        let params = {
-            title: "taskReward",
-            taskId: taskId
-        }
-
-        let complete = (data) => {
-            cc.log(params.title, data);
-            if (callback) callback(data);
-        };
-
-        this._server.request(`connector.${CASH_TAG}.handler`,
-            params,
-            complete, (code) => {
-                if (taskId == 30) {
-                    if (callback) callback(code);
-                }
-            }
-        );
-    }
+     /** 获取begin到length的随机数 整数 */
+    public getRandomNum = function (begin: number, length: number) {
+        return Math.round(Math.random() * (length - begin) + begin);
+    };
 
     /**
      * 主线任务领取
@@ -835,29 +840,6 @@ export class GameProtocol {
         };
 
         this._server.request(`connector.${CASH_TAG}.write`,
-            params,
-            complete, (code) => {
-                if (callback) callback(null);
-            }
-        );
-    }
-
-    /**
-     * 请求缓存数据
-     * @param callback 
-     * @编号 (2103)
-     */
-    public requestCacheData(configName: string, callback: Function) {
-        let params = {
-            title: "clientConfig",
-            configName: configName
-        }
-        let complete = (result) => {
-            cc.log(params.title);
-            if (callback) callback(result);
-        };
-
-        this._server.request(`connector.${CASH_TAG}.read`,
             params,
             complete, (code) => {
                 if (callback) callback(null);

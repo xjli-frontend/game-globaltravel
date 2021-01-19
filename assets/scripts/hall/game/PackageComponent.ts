@@ -184,9 +184,9 @@ export default class PackageComponent extends ComponentExtends {
         if(config.addType != 4){
             callback && callback();
         }
-        main.module.gameProtocol.requestPropList((data)=>{
-            main.module.vm.propList = data["propList"];
-        })
+        // main.module.gameProtocol.requestPropList((data)=>{
+        //     main.module.vm.propList = data["propList"];
+        // })
         let _taskList = main.module.calcUiShow.changeTaskListByTypeCount(TaskType.USE_PROP,1);
         main.module.gameProtocol.sendTaskList(_taskList,(obj)=>{
             main.module.vm.taskList = _taskList;

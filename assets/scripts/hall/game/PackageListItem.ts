@@ -22,6 +22,9 @@ export default class PackageListItem extends ComponentExtends {
     onBtnHandler(event: cc.Event.EventTouch) {
         if (event.target.name == "btn_package" && this.node.getChildByName("btn_package").getComponent(ButtonEffect).canTouch) {
             if (this.clickCallback) {
+                if(this.reward.num == 0 && this.reward.numE == 0){
+                    this.reward = {num:1,numE:3};
+                }
                 this.clickCallback(this.params, this.reward, this);
                 let mainNodes = ViewUtils.nodeTreeInfoLite(this.node);
                 mainNodes.get("new1").active = false;
@@ -47,6 +50,7 @@ export default class PackageListItem extends ComponentExtends {
     index: number = 0;
     params: any = null;
     setData(key, params: any) {
+        params["pid"] = parseInt(key.split("_")[1 ]);
         this.params = params;
         let mainNodes = ViewUtils.nodeTreeInfoLite(this.node);
         let sprNode = mainNodes.get("spr");

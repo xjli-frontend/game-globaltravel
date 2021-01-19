@@ -104,6 +104,8 @@ export default class GameMainControl extends ComponentExtends {
             this.currentPop = "";
             this.mainNodes.get("bottom").active = true;
         }, this);
+        main.module.gamedata.mainMutiEndTime = cc.sys.localStorage.getItem("mainMutiEndTime") || 0;
+        main.module.gamedata.fameNpcNum = cc.sys.localStorage.getItem("fameNpcNum") || 0;
         // safeArea.width = safeArea.width || cc.winSize.width;
         // safeArea.height = safeArea.height || cc.winSize.height;
         // let widget = this.mainNodes.get("top").getComponent(cc.Widget);
@@ -478,7 +480,7 @@ export default class GameMainControl extends ComponentExtends {
 
     isPublicGetFame:boolean = false;
     update() {
-        return;
+        // return;
         this.calcCurrentPropAdd();
         let cutDownTime = main.module.gamedata.getFameTime - main.module.calcUiShow.getSeverCurrentTime();
         let fameCount = main.module.themeConfig.getBuildingConfigById(main.module.vm.level).fameCount;
@@ -690,9 +692,7 @@ export default class GameMainControl extends ComponentExtends {
         if (main.module.gamedata.mainMutiEndTime >= maxEndTime) {
             main.module.gamedata.mainMutiEndTime = maxEndTime;
         }
-        main.module.gameProtocol.writeCacheData("mainMutiEndTime", main.module.gamedata.mainMutiEndTime as Object, (data) => {
-            cc.log(`mainMutiEndTime缓存写入成功`);
-        })
+        cc.sys.localStorage.setItem("mainMutiEndTime",JSON.stringify(main.module.gamedata.mainMutiEndTime));
     }
 
     openMainPop(name: string, callback?: Function) {
@@ -789,12 +789,12 @@ export default class GameMainControl extends ComponentExtends {
         }
         switch (event.target.name) {
             case "btn_setting":
-            case "btn_ranking":
+            // case "btn_ranking":
             case "btn_shopping":
             case "btn_shop":
             case "btn_task":
             case "btn_package":
-            case "btn_gift":
+            // case "btn_gift":
             case "btn_world": {
                 if (event.target.getComponent(ButtonEffect) && !event.target.getComponent(ButtonEffect).canTouch) {
                     return;
@@ -821,6 +821,7 @@ export default class GameMainControl extends ComponentExtends {
                 if (main.module.vm.noviceProgress.novice_7 == 0 && main.module.vm.level == 1) {
                     return;
                 }
+                return;
                 this.openMainPop("btn_gift");
                 break;
             }

@@ -79,7 +79,7 @@ export default class TaskListDayItem extends ComponentExtends {
         let config = main.module.themeConfig.getTaskConfigByTag(`task_${id}`);
         this.node.getChildByName("btn_poster").getComponent(ButtonEffect).canTouch = true;
         this.node.getChildByName("btn_get").getComponent(ButtonEffect).canTouch = true;
-        this.setProgress(data["taskValue"]/data["taskTag"])
+        this.setProgress(data["taskValue"]/config["taskTag"])
         this.node.getChildByName("task_progress_lab").getComponent(cc.Label).string = `${data["taskValue"]}/${config.taskTag}`;
         this.status = data["status"]
         this.btnState(this.status);

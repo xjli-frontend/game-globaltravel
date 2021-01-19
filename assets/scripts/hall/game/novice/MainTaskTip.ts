@@ -100,6 +100,7 @@ export default class MainTaskTip extends ComponentExtends {
     currentMianId:number = 0;
     novice_3:number = -1;
     refreshMainProgressInfo(){
+        return;
         let storeHandler = main.module.mainScene.storesNode.getChildByName("store_1").getComponent(StoreComponent).mainNodes.get("handler");
         let vm = main.module.vm;
         let noviceProgress = vm.noviceProgress;
@@ -284,6 +285,7 @@ export default class MainTaskTip extends ComponentExtends {
     isLockPop:boolean = false;
     isProgress:boolean = false;
     onTouchEnd(){
+        return;
         let mapControl = main.module.mainScene.mapControl;
         if (mapControl.isMoving) {
             if (this.node._touchListener) {

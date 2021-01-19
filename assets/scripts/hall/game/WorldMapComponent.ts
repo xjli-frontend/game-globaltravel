@@ -252,7 +252,7 @@ export default class WorldMapComponent extends ComponentExtends {
                 }
                 this.btnPassHandler(()=>{
                     cc.log("卖楼成功");
-                });
+                },null);
                 service.analytics.logEvent("fame_click_restart", "", "");
                 break;
             }
@@ -262,8 +262,7 @@ export default class WorldMapComponent extends ComponentExtends {
     btnPassHandler(noviceCallback:Function,animCallback?:Function){
         let callback = ()=>{
             main.module.vm.sellNum+=1;
-            main.module.gameProtocol.writeCacheData("sellNum", main.module.vm.sellNum as Object, (data) => {
-            })
+            cc.sys.localStorage.setItem("sellNum",main.module.vm.sellNum)
             let _storeList = this.getSellList(0);
             main.module.vm.storeList = this.getSellList(0);
             main.module.gameProtocol.sendStoreList(_storeList,()=>{
@@ -281,9 +280,7 @@ export default class WorldMapComponent extends ComponentExtends {
             })
             main.module.calcUiShow.sellStores(()=>{
                 main.module.vm.isPass = 0;
-                main.module.gameProtocol.writeCacheData("isPass", main.module.vm.isPass as Object, (data) => {
-                        
-                })
+                cc.sys.localStorage.setItem("isPass",0);
                 noviceCallback && noviceCallback();
                 let _taskList = main.module.calcUiShow.changeTaskListByTypeCount(TaskType.SELL_STORES,1);
                 main.module.gameProtocol.sendTaskList(_taskList,(obj)=>{
@@ -291,7 +288,7 @@ export default class WorldMapComponent extends ComponentExtends {
                 })
                 let _animCallback = ()=>{
                     main.module.vm.level += 1;
-                    animCallback ();
+                    animCallback && animCallback ();
                 }
                 this.currentMapLevel = main.module.vm.level + 1;
                 this.initProgressRoadBtnPass();
