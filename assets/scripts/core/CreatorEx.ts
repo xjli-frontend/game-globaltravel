@@ -109,11 +109,6 @@ export class CreatorEx {
         // if (cc.sys.isBrowser && cc.dynamicAtlasManager){
         //     cc.dynamicAtlasManager.enabled = false;
         // }
-        cc.WebView.Impl.prototype.evaluateJS = function (str) {
-            var iframe = this._iframe;
-            if (iframe) {
-                return iframe.evaluateJS(str);
-            }
-        };
+    
     }
 }

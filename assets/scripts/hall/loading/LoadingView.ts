@@ -57,6 +57,7 @@ export default class LoadingView extends ViewLayout {
         this.viewObj.get("progressBar").getComponent(cc.ProgressBar).progress = 0;
         let asyncQueue = new AsyncQueue();
         asyncQueue.push((next) => {
+            cc.log(`加载langjson`)
             cc.loader.loadResDir("langjson", (err) => {
                 if (err) {
                     cc.log(JSON.stringify(err));
@@ -65,7 +66,8 @@ export default class LoadingView extends ViewLayout {
             });
         });
         asyncQueue.push((next) => {
-            cc.loader.loadResDir("audio", (err) => {
+            cc.log(`加载language`)
+            cc.loader.loadResDir("language", (err) => {
                 if (err) {
                     cc.log(JSON.stringify(err));
                 }
@@ -73,6 +75,7 @@ export default class LoadingView extends ViewLayout {
             });
         });
         asyncQueue.push((next) => {
+            cc.log(`加载main`)
             cc.loader.loadResDir("main", (completedCount: number, totalCount: number, item: any) => {
                 let progress = completedCount / totalCount;
                 this.viewObj.get("lab_progress").getComponent(cc.Label).string = (Math.ceil(progress * 100) + "%");
